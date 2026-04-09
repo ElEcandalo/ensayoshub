@@ -1,5 +1,6 @@
 # Estado del Proyecto - EnsayoHub
-## Última actualización: 2026-04-09
+
+**Última actualización: 2026-04-09**
 
 ---
 
@@ -8,64 +9,152 @@
 | Fase | Estado | Notas |
 |------|--------|-------|
 | Docs/Prompts | ✅ Completo | RFC, prompts agentes, ADR, SDD |
-| Setup Herramientas | ✅ Completo | Node 22, pnpm, Ollama qwen2.5:7b |
-| Backend API | ✅ Completo | 14 archivos, endpoints completos |
-| Frontend Components | ✅ Completo | Layout, Agenda, Dashboard, Finance, Login |
-| SDD Workflow | ✅ Nuevo | Scripts de orquestación mejorados |
-| DB Setup | ⏳ Pendiente | Requiere Supabase + .env |
-| Testing | ⏳ Pendiente | - |
+| Backend API | ✅ Completo | 15+ endpoints, Fastify + Drizzle |
+| Frontend Components | ✅ Completo | React + Vite + TanStack Query |
+| DB Setup | ✅ Completo | Neon PostgreSQL |
+| Despliegue | ✅ Completo | Vercel + Render |
+| Testing | ⏳ Pendiente | Pruebas manuales realizadas |
 
 ---
 
-## Ecosystem Stack (Basado en Gentle AI Stack)
+## URLs de Producción
+
+| Servicio | URL | Estado |
+|----------|-----|--------|
+| Frontend | https://ensayoshub.vercel.app | ✅ Activo |
+| Backend | https://ensayoshub.onrender.com | ✅ Activo (sleep mode) |
+| DB | Neon PostgreSQL | ✅ Activo |
+
+---
+
+## Stack Tecnológico
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    ORQUESTADOR PRINCIPAL                    │
-│                  (Vos / Humano)                            │
-│  "Ustedes son orquestadores del orquestador"               │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    MEMORY.md (Engram)                       │
-│  Decisiones, bugs, patrones, aprendizajes persistidos     │
-└─────────────────────────────────────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    SDD Workflow                             │
-│  explore → propose → specify → implement → verify → doc    │
-└─────────────────────────────────────────────────────────────┘
-                      │
-          ┌───────────┴───────────┐
-          ▼                       ▼
-┌──────────────────┐     ┌──────────────────┐
-│   SUBAGENTE 1    │     │   SUBAGENTE 2    │
-│   (Frontend)     │     │   (Backend)      │
-│   3% contexto    │     │   3% contexto    │
-└──────────────────┘     └──────────────────┘
+Frontend:     React 19 + Vite 8 + TypeScript 6 + TanStack Query + TailwindCSS 4
+Backend:      Node.js 22 + Fastify 5 + Drizzle ORM
+DB:           Neon PostgreSQL
+Auth:         JWT
+Despliegue:   Vercel (frontend) + Render (backend)
 ```
+
+---
+
+## Funcionalidades Implementadas
+
+### ✅ Autenticación
+- Login/Logout con JWT
+- Protección de rutas
+- Roles: admin / collaborator
+
+### ✅ Agenda
+- Calendario con react-big-calendar
+- Vistas: mes, semana, día
+- Colores por estado de reserva
+
+### ✅ Reservas (Bookings)
+- Crear/editar/eliminar reservas
+- Confirmar reservas (crea income)
+- Completar reservas (con extra amount)
+- Detección de tarifas especiales (viernes-sábado-domingo/feriados)
+
+### ✅ Clientes
+- CRUD completo
+- Eliminación cascada de reservas
+- Ver detalle de reservas por cliente
+
+### ✅ Finanzas
+- Ingresos (con linked a bookings)
+- Gastos (con categorías, recurrencia)
+- Estados: pending, paid, overdue
+
+### ✅ Dashboard
+- Métricas: occupancy, horas, ingresos, gastos, ganancias
+- Períodos: semana, mes, año
+
+### ✅ Tarifas
+- Página de visualización de precios
+- Tarifas diferenciadas por tipo de servicio y día
+
+---
+
+## Pre-commit Hook
+
+El proyecto tiene configurado un hook de pre-commit que verifica:
+1. **TypeScript** - `pnpm typecheck` (tsc --noEmit)
+2. **ESLint** - `pnpm lint`
+
+### Reglas ESLint activas:
+- `@typescript-eslint/no-explicit-any` → error
+- `@typescript-eslint/no-unused-vars` → error
+- `no-console` → warning
+
+### Para omitir el hook (emergencias):
+```bash
+git commit --no-verify -m "mensaje"
+```
+
+---
+
+## Resolver Conflictos
+
+### 1. Antes de hacer pull:
+```bash
+git fetch origin
+git pull origin main --rebase
+```
+
+### 2. Si hay conflictos:
+```bash
+# Editar archivos en conflicto
+git add archivos-resueltos
+git rebase --continue
+```
+
+### 3. Si querés cancelar el rebase:
+```bash
+git rebase --abort
+```
+
+### 4. Tips para evitar conflictos:
+- Hacer `git pull` frecuentemente
+- Trabajar en branches separados para features grandes
+- Commits pequeños y frecuentes
+- Nunca fazer `git push --force` sobre main
 
 ---
 
 ## Scripts Disponibles
 
 ```bash
-# Orquestación básica
-~/scripts/orchestrate.sh status          # Estado del proyecto
-~/scripts/orchestrate.sh task <archivo>  # Ejecutar tarea con agente
-~/scripts/orchestrate.sh agent <tipo>     # Ejecutar agente específico
+# Desarrollo local
+cd backend && pnpm dev      # http://localhost:3001
+cd frontend && pnpm dev     # http://localhost:5173
 
-# SDD Workflow (Spec Driven Development)
-~/scripts/sdd.sh explore "nombre tarea"   # Explorar y crear propuesta
-~/scripts/sdd.sh implement <spec>       # Delegar implementación
-~/scripts/sdd.sh status                   # Ver specs pendientes
-~/scripts/sdd.sh list                    # Listar tareas
+# Build
+cd backend && pnpm build
+cd frontend && pnpm build
 
-# Ollaama directo
-~/scripts/ollama-agent.sh -a frontend <tarea.md>
-~/scripts/ollama-agent.sh -a backend <tarea.md>
+# DB
+cd backend && pnpm db:push   # Aplicar schema
+cd backend && pnpm db:seed   # Poblar datos
+```
+
+---
+
+## Variables de Entorno
+
+### Backend (.env)
+```
+DATABASE_URL=postgresql://...@neon.tech/neondb
+JWT_SECRET=...
+PORT=3001
+NODE_ENV=production
+```
+
+### Frontend (.env)
+```
+VITE_API_URL=http://localhost:3001/api/v1
+# En producción: VITE_API_URL=https://ensayoshub.onrender.com/api/v1
 ```
 
 ---
@@ -74,93 +163,30 @@
 
 | Archivo | Descripción |
 |---------|-------------|
-| `MEMORY.md` | Memoria persistente (Engram) - decisiones, bugs, patrones |
-| `docs/SDD.md` | Workflow SDD documentado |
+| `MEMORY.md` | Memoria persistente - decisiones, bugs, patrones |
+| `DEPLOY.md` | Guía de despliegue a producción |
 | `docs/ADR.md` | Architecture Decision Records |
-| `docs/tasks/` | Tareas pendientes para agentes |
-| `docs/specs/` | Especificaciones detalladas (SDD) |
+| `docs/tasks/` | Tareas del proyecto |
+| `frontend/vercel.json` | Config Vercel |
+| `backend/render.yaml` | Config Render |
+| `.git/hooks/pre-commit` | Hook de validación |
 
 ---
 
-## Flujo de Trabajo Recomendado
+## Notas Importantes
 
-### 1. Nueva Feature
-```bash
-# 1. Explorar y crear propuesta
-~/scripts/sdd.sh explore "agregar reportes CSV"
+1. **Render sleep mode**: El backend gratuito entra en "sleep" después de 15 min sin actividad. La primera request tardará ~30-60 seg en despertar.
 
-# 2. Editar propuesta en docs/tasks/
+2. **Vercel SPA**: El frontend usa React Router, configurado con `vercel.json` para servir `index.html` en todas las rutas.
 
-# 3. Crear spec detallada
-~/scripts/sdd.sh spec 08-reportes
-
-# 4. Implementar con subagente
-~/scripts/sdd.sh implement docs/specs/08-reportes.md
-
-# 5. Verificar y documentar
-```
-
-### 2. Continuar desde donde quedó
-```bash
-# Ver estado
-~/scripts/sdd.sh status
-
-# Leer MEMORY.md para contexto
-cat MEMORY.md
-
-# Continuar tarea específica
-~/scripts/sdd.sh implement docs/specs/03-booking-modal.md
-```
+3. **Neon DB**: La base de datos ya tiene seed de categorías y feriados.
 
 ---
 
-## Para Continuar Inmediatamente
+## Próximos Pasos (Opcionales)
 
-### 1. Configurar DB
-```bash
-# Crear cuenta en supabase.com
-# Copiar DATABASE_URL a backend/.env
-
-cd ~/proyectos/ensayohub/backend
-export PATH="$HOME/nodejs/bin:$PATH"
-pnpm db:push    # Aplica schema
-pnpm db:seed    # Pobla categorías y feriados
-```
-
-### 2. Probar
-```bash
-# Terminal 1: Backend
-cd ~/proyectos/ensayohub/backend
-pnpm dev
-
-# Terminal 2: Frontend  
-cd ~/proyectos/ensayohub/frontend
-pnpm dev
-```
-
-### 3. Testing
-```bash
-# Pendiente: configurar Vitest + Playwright
-```
-
----
-
-## Lecciones Aprendidas
-
-1. **Agentes locales (Ollama)** funcionan pero necesitan refinamiento
-2. **Código repetitivo** conviene delegar a agentes
-3. **Decisiones críticas** necesitan documentarse en MEMORY.md
-4. **Specs detalladas** reducen iteraciones de corrección
-5. **Human in the loop** es essential - revisar antes de aceptar
-
----
-
-## Recursos
-
-- Video referencia: [Gentle AI Stack - Alan from Gentleman Programming](https://www.youtube.com/watch?v=UoS_LP-PCG8)
-- OpenSpec.dev: Especificaciones legibles por IA
-- Skills configuradas:
-  - nodejs-backend-patterns
-  - architecture-patterns
-  - supabase-postgres-best-practices
-  - zod-4
+1. Testing automatizado (Vitest + Playwright)
+2. Migración de datos desde Excel
+3. Reportes exportables (CSV/PDF)
+4. Mejoras de UI/UX
+5. Notificaciones/email

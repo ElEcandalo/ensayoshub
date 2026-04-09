@@ -10,77 +10,143 @@
    Puerto 80          Puerto 10000         5432
 ```
 
+## URLs de Producción
+
+| Servicio | URL |
+|----------|-----|
+| Frontend | https://ensayoshub.vercel.app |
+| Backend | https://ensayoshub.onrender.com |
+| API | https://ensayoshub.onrender.com/api/v1 |
+
+---
+
+## Configuración de Archivos
+
+### Vercel (vercel.json)
+```json
+{
+  "framework": "vite",
+  "buildCommand": "cd frontend && pnpm install && pnpm build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "pnpm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
+```
+
+**Importante:** La regla de `rewrites` es necesaria para que React Router funcione correctamente en SPA (Single Page Application).
+
+### Render (render.yaml)
+```yaml
+services:
+  - type: web
+    name: ensayohub-backend
+    env: node
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm start
+    plan: free
+    autoDeploy: false
+```
+
+---
+
 ## Pasos para Desplegar
 
-### 1. Neon (Base de Datos) - Ya configurado
-Tu DB ya está en: `neondb`
+### 1. Pre-requisitos
+- Repo en GitHub configurado
+- Cuenta en Vercel y Render
 
 ### 2. Vercel (Frontend)
-
-```bash
-# Opción A: Desde la web
-# 1. Ir a vercel.com
-# 2. Importar repositorio de GitHub
-# 3. Configurar:
-#    - Framework Preset: Vite
-#    - Build Command: pnpm build
-#    - Output Directory: dist
-
-# Opción B: CLI
-cd frontend
-pnpm add -g vercel
-vercel --prod
-```
+1. Ir a vercel.com
+2. Importar repositorio `ElEcandalo/ensayoshub`
+3. Configuration:
+   - Framework Preset: **Vite**
+   - Root Directory: `frontend` (o dejar raíz y usar buildCommand con `cd frontend`)
+4. Environment Variables:
+   - `VITE_API_URL` = `https://ensayoshub.onrender.com/api/v1`
+5. Deploy
 
 ### 3. Render (Backend)
+1. Ir a render.com
+2. New > Web Service
+3. Conectar repo `ElEcandalo/ensayoshub`
+4. Configuration:
+   - Root Directory: `backend`
+   - Build Command: `pnpm install && pnpm build`
+   - Start Command: `pnpm start`
+   - Environment: Node
+   - Plan: Free
+5. Environment Variables:
+   - `DATABASE_URL` = (URL de Neon)
+   - `JWT_SECRET` = (generar con `openssl rand -base64 32`)
+   - `PORT` = `10000`
+   - `NODE_ENV` = `production`
+6. Deploy
+
+---
+
+## Desarrollo Local
 
 ```bash
-# Opción A: Desde la web
-# 1. Ir a render.com
-# 2. New > Web Service
-# 3. Conectar repo de GitHub
-# 4. Configurar:
-#    - Build Command: pnpm install && pnpm build
-#    - Start Command: pnpm start
-#    - Environment: Node
-#    - Free instance
+# Clonar repo
+git clone https://github.com/ElEcandalo/ensayoshub.git
+cd ensayoshub
 
-# Variables de entorno en Render:
-DATABASE_URL=postgresql://...@neon.tech/neondb
-JWT_SECRET=genera-una-nueva-clave-segura
-PORT=10000
-NODE_ENV=production
+# Instalar dependencias
+cd backend && pnpm install
+cd ../frontend && pnpm install
+
+# Variables de entorno
+cp backend/.env.example backend/.env
+# Editar con tu URL de Neon
+
+# Ejecutar
+# Terminal 1: Backend
+cd backend && pnpm dev  # http://localhost:3001
+
+# Terminal 2: Frontend
+cd frontend && pnpm dev  # http://localhost:5173
 ```
 
-### 4. Actualizar Frontend
-
-Una vez deployed el backend, actualizar en `frontend/.env`:
-```
-VITE_API_URL=https://ensayohub-backend.onrender.com/api/v1
-```
+---
 
 ## Notas Importantes
 
 ### Render - Sleep Mode
-El plan gratuito de Render entra en "sleep" después de 15 min sin tráfico.
+- El plan gratuito entra en "sleep" después de **15 min** sin tráfico
 - La primera request tardará ~30-60 seg en despertar
-- Funciona bien para testing, no ideal para producción
+- Funciona bien para testing/uso personal
 
-### Para producción estable ($)
-Considerar:
-- Railway (más estable que Render)
-- Coolify (self-hosted en VPS)
+### Vercel - SPA Routing
+- El `vercel.json` tiene rewrites para servir `index.html` en todas las rutas
+- Esto permite que React Router maneje las rutas del cliente
 
-## Scripts Útiles
+### Neon - Base de Datos
+- La DB ya tiene seed de categorías y feriados
+- 512MB gratuito
 
-```bash
-# Build local
-cd frontend && pnpm build
-cd backend && pnpm build
+---
 
-# Probar producción local
-# Frontend
-cd frontend && pnpm preview
-# Backend
-cd backend && pnpm start
-```
+## Resolver Problemas
+
+### Frontend 404 en rutas
+- Verificar que `vercel.json` tenga la regla de rewrites
+- Hacer rebuild en Vercel después de cambios
+
+### Backend no responde
+- Verificar que Render esté desplegado (no en sleep)
+- Revisar logs en Render dashboard
+
+### Errores de TypeScript/ESLint en deploy
+- El pre-commit hook debe pasar localmente antes de push
+- Verificar que `pnpm typecheck` y `pnpm lint` pasen localmente
+
+---
+
+## Alternativas para Producción ($)
+
+Si necesitás más estabilidad:
+- **Railway** - Similar a Render pero más estable
+- **Coolify** - Self-hosted en VPS (~$5/mes)
+- **Neon** - Paid plans para más DB
