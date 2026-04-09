@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient, type Booking } from '@/lib/api';
+import { apiClient } from '@/lib/api';
 
 export function useClients() {
   return useQuery({

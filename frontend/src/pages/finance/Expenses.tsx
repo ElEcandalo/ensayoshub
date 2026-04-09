@@ -65,7 +65,7 @@ export function Expenses() {
     e.preventDefault();
     
     const payload = {
-      amount: parseFloat(formData.amount),
+      amount: formData.amount,
       categoryId: formData.categoryId || undefined,
       description: formData.description,
       dueDate: formData.dueDate,

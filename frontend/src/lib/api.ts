@@ -107,8 +107,12 @@ export const apiClient = {
     get: () => api.get<{ tariffs: typeof TARIFFS; lastUpdated: string }>('/tariffs'),
   },
   dashboard: {
-    metrics: (period: 'week' | 'month' | 'year' | 'custom', startDate?: string, endDate?: string) =>
-      api.get<DashboardMetrics>('/dashboard/metrics', { period, startDate, endDate }),
+    metrics: (period: 'week' | 'month' | 'year' | 'custom', startDate?: string, endDate?: string) => {
+      const params: Record<string, string> = { period };
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+      return api.get<DashboardMetrics>('/dashboard/metrics', params);
+    },
   },
 };
 

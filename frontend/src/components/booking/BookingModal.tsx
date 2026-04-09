@@ -7,7 +7,7 @@ import { useClients, useCreateClient } from '@/hooks/useClients';
 import { useCreateBooking, useUpdateBooking, useConfirmBooking, useCompleteBooking, useDeleteBooking } from '@/hooks/useBookings';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { getTariff, formatCurrency } from '@/lib/tariffs';
-import type { Booking, Client } from '@/lib/api';
+import type { Booking } from '@/lib/api';
 
 const bookingSchema = z.object({
   clientId: z.string().min(1, 'Cliente requerido'),
@@ -55,7 +55,6 @@ export function BookingModal({ open, onClose, booking, initialDate }: BookingMod
     register,
     handleSubmit,
     watch,
-    setValue,
     reset,
     formState: { errors },
   } = useForm<BookingForm>({

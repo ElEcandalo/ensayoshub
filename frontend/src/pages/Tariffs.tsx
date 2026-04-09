@@ -7,7 +7,7 @@ const DAYS = [
   { key: 'holiday', label: 'Feriados', days: 'Días feriados', rate: 'weekend_holiday' as const },
 ];
 
-const SERVICE_TYPES = [
+const SERVICE_TYPES: Array<{ key: 'rehearsal' | 'class'; label: string; icon: string }> = [
   { key: 'rehearsal', label: 'Ensayo', icon: '🎸' },
   { key: 'class', label: 'Clase', icon: '🎹' },
 ];
@@ -60,7 +60,7 @@ export function Tariffs() {
                   </div>
                   <div className="text-right">
                     <p className="text-xl font-bold text-slate-800">
-                      {formatCurrency(tariffs?.[service.key as keyof 'rehearsal' | 'class']?.[day.rate] || 0)}
+                      {formatCurrency(tariffs?.[service.key]?.[day.rate] ?? 0)}
                     </p>
                     <p className="text-xs text-gray-500">por hora</p>
                   </div>
