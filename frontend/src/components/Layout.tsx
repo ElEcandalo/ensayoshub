@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,19 +10,7 @@ export function Layout({ children }: LayoutProps) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location.pathname]);
-
   const isActive = (path: string) => location.pathname === path;
-
-  const navItems = [
-    { path: '/agenda', label: 'Agenda' },
-    { path: '/clientes', label: 'Clientes' },
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/finanzas/ingresos', label: 'Ingresos', parent: 'finanzas' },
-    { path: '/finanzas/gastos', label: 'Gastos', parent: 'finanzas' },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
