@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '../lib/db.js';
 import { bookings, clients, incomes } from '../db/schema.js';
 import { eq, and, gte, lte, ne, or, sql } from 'drizzle-orm';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { requireAuth, requireAdmin, type AuthUser } from '../middleware/auth.js';
 import { errors } from '../middleware/error.js';
 
 const createBookingSchema = z.object({
@@ -89,7 +89,8 @@ export async function bookingRoutes(app: FastifyInstance) {
 
   app.post('/', async (request, reply) => {
     const data = createBookingSchema.parse(request.body);
-    const userId = request.user?.id as string | undefined;
+    const user = request.user as AuthUser | undefined;
+    const userId = user?.id;
     
     console.log('=== CREATING BOOKING ===');
     console.log('clientId:', data.clientId);
@@ -117,10 +118,10 @@ export async function bookingRoutes(app: FastifyInstance) {
       
       try {
         const [booking] = await db.insert(bookings).values({
-          clientId: data.clientId,
-          startTime: startDateTime.toISOString(),
-          endTime: endDateTime.toISOString(),
-          serviceType: data.serviceType,
+          clientId: data.clientId as any,
+          startTime: startDateTime.toISOString() as any,
+          endTime: endDateTime.toISOString() as any,
+          serviceType: data.serviceType as any,
           status: 'pending' as const,
           isHolidayRate: isSpecialRate,
           baseAmount: amount.toString(),
@@ -141,7 +142,8 @@ export async function bookingRoutes(app: FastifyInstance) {
   app.post('/:id/confirm', { preHandler: requireAdmin }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const { amount, date } = confirmSchema.parse(request.body);
-    const userId = request.user?.id;
+    const user = request.user as AuthUser | undefined;
+    const userId = user?.id;
     
     const booking = await db.query.bookings.findFirst({
       where: and(eq(bookings.id, id), eq(bookings.status, 'pending')),
@@ -168,7 +170,8 @@ export async function bookingRoutes(app: FastifyInstance) {
   app.post('/:id/complete', { preHandler: requireAdmin }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const { actualEndTime, extraAmount } = completeSchema.parse(request.body);
-    const userId = request.user?.id;
+    const user = request.user as AuthUser | undefined;
+    const userId = user?.id;
     
     const booking = await db.query.bookings.findFirst({
       where: and(eq(bookings.id, id), eq(bookings.status, 'confirmed')),

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '../../lib/db.js';
 import { incomes } from '../../db/schema.js';
 import { eq, and, gte, lte } from 'drizzle-orm';
-import { requireAuth, requireAdmin } from '../../middleware/auth.js';
+import { requireAuth, requireAdmin, type AuthUser } from '../../middleware/auth.js';
 import { errors } from '../../middleware/error.js';
 
 const createIncomeSchema = z.object({
@@ -33,7 +33,8 @@ export async function incomeRoutes(app: FastifyInstance) {
 
   app.post('/', async (request, reply) => {
     const data = createIncomeSchema.parse(request.body);
-    const userId = request.user?.id;
+    const user = request.user as AuthUser | undefined;
+    const userId = user?.id;
     
     const [income] = await db.insert(incomes).values({
       amount: data.amount.toString(),
@@ -50,8 +51,13 @@ export async function incomeRoutes(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     const data = createIncomeSchema.partial().parse(request.body);
     
+    const updates: Record<string, unknown> = { ...data };
+    if (data.amount) {
+      updates.amount = data.amount.toString();
+    }
+    
     const [income] = await db.update(incomes)
-      .set(data.amount ? { amount: data.amount.toString(), ...data } : data)
+      .set(updates)
       .where(eq(incomes.id, id))
       .returning();
     

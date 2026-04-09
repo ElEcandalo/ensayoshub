@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '../lib/db.js';
 import { clients, bookings } from '../db/schema.js';
 import { eq, inArray } from 'drizzle-orm';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, type AuthUser } from '../middleware/auth.js';
 import { errors } from '../middleware/error.js';
 
 const createClientSchema = z.object({
@@ -47,7 +47,8 @@ export async function clientRoutes(app: FastifyInstance) {
 
   app.post('/', async (request, reply) => {
     const data = createClientSchema.parse(request.body);
-    const userId = request.user?.id;
+    const user = request.user as AuthUser | undefined;
+    const userId = user?.id;
     
     const [client] = await db.insert(clients).values({
       ...data,

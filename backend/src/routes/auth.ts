@@ -6,6 +6,12 @@ import { eq } from 'drizzle-orm';
 import { errors } from '../middleware/error.js';
 import bcrypt from 'bcrypt';
 
+interface JwtPayload {
+  sub: string;
+  email: string;
+  role: string;
+}
+
 const loginSchema = z.object({
   email: z.email(),
   password: z.string().min(1),
@@ -96,7 +102,8 @@ export async function authRoutes(app: FastifyInstance) {
       throw errors.unauthorized();
     }
   }] }, async (request) => {
-    const userId = request.user.sub;
+    const payload = request.user as JwtPayload;
+    const userId = payload.sub;
     
     const user = await db.query.users.findFirst({
       where: eq(users.id, userId),

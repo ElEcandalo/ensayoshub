@@ -10,10 +10,10 @@ export interface AuthUser {
   role: 'admin' | 'collaborator';
 }
 
-declare module 'fastify' {
-  interface FastifyRequest {
-    user?: AuthUser;
-  }
+interface JwtPayload {
+  sub: string;
+  email: string;
+  role: string;
 }
 
 export async function requireAuth(
@@ -21,8 +21,9 @@ export async function requireAuth(
   reply: FastifyReply
 ) {
   try {
-    await request.jwtVerify();
-    const userId = request.user.sub;
+    const decoded = request.jwtVerify<JwtPayload>();
+    const payload = await decoded;
+    const userId = payload.sub;
     
     const user = await db.query.users.findFirst({
       where: eq(users.id, userId)
@@ -32,7 +33,7 @@ export async function requireAuth(
       return reply.status(401).send({ error: 'User not found' });
     }
     
-    request.user = {
+    (request as any).user = {
       id: user.id,
       email: user.email,
       name: user.name,
@@ -50,7 +51,8 @@ export async function requireAdmin(
   const authResult = await requireAuth(request, reply);
   if (authResult) return authResult;
   
-  if (request.user?.role !== 'admin') {
+  const user = (request as any).user as AuthUser | undefined;
+  if (user?.role !== 'admin') {
     return reply.status(403).send({ error: 'Admin access required' });
   }
 }

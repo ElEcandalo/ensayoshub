@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from '../../lib/db.js';
 import { expenses } from '../../db/schema.js';
 import { eq, and, gte, lte } from 'drizzle-orm';
-import { requireAuth, requireAdmin } from '../../middleware/auth.js';
+import { requireAuth, requireAdmin, type AuthUser } from '../../middleware/auth.js';
 import { errors } from '../../middleware/error.js';
 
 const createExpenseSchema = z.object({
@@ -39,7 +39,8 @@ export async function expenseRoutes(app: FastifyInstance) {
 
   app.post('/', async (request, reply) => {
     const data = createExpenseSchema.parse(request.body);
-    const userId = request.user?.id;
+    const user = request.user as AuthUser | undefined;
+    const userId = user?.id;
     
     const [expense] = await db.insert(expenses).values({
       amount: data.amount.toString(),
