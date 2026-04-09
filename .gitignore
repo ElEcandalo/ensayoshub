@@ -28,3 +28,6 @@ Thumbs.db
 
 # Frontend
 *.tsbuildinfo
+
+# Docs con datos sensibles
+HANDOFF.md
