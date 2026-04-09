@@ -34,7 +34,7 @@ export function Login() {
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       navigate('/agenda');
-    } catch (err) {
+    } catch {
       setError('Email o contraseña incorrectos');
     } finally {
       setIsLoading(false);

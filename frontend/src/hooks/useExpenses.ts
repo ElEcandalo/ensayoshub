@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api';
+import { apiClient, type Expense } from '@/lib/api';
 
 export function useExpenses(params?: { dueDateStart?: string; dueDateEnd?: string; paymentStatus?: string }) {
   return useQuery({
@@ -23,7 +23,7 @@ export function useUpdateExpense() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<Expense> }) =>
       apiClient.expenses.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });

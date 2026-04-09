@@ -264,11 +264,11 @@ export function Expenses() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Recurrencia</label>
-                <select
-                  value={formData.recurrenceType}
-                  onChange={(e) => setFormData({ ...formData, recurrenceType: e.target.value as any })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border"
-                >
+                  <select
+                    value={formData.recurrenceType}
+                    onChange={(e) => setFormData({ ...formData, recurrenceType: e.target.value as 'none' | 'weekly' | 'monthly' | 'yearly' })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border"
+                  >
                   <option value="none">Una vez</option>
                   <option value="weekly">Semanal</option>
                   <option value="monthly">Mensual</option>

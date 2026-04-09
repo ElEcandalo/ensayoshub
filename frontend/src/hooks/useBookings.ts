@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api';
+import { apiClient, type Booking } from '@/lib/api';
 
 export function useBookings(params?: { startDate?: string; endDate?: string; status?: string }) {
   return useQuery({
@@ -31,7 +31,7 @@ export function useUpdateBooking() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: string; data: Partial<Booking> }) =>
       apiClient.bookings.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });

@@ -49,14 +49,14 @@ export function Agenda() {
     setIsModalOpen(true);
   };
 
-  const handleSelectEvent = (event: any) => {
+  const handleSelectEvent = (event: { resource: Booking }) => {
     setSelectedBooking(event.resource);
     setSelectedSlot(null);
     setIsModalOpen(true);
   };
 
-  const eventStyleGetter = (event: any) => {
-    const booking = event.resource as Booking;
+  const eventStyleGetter = (event: { resource: Booking }) => {
+    const booking = event.resource;
     return {
       style: {
         backgroundColor: statusColors[booking.status] || '#94a3b8',
