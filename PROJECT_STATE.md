@@ -39,6 +39,38 @@ Despliegue:   Vercel (frontend) + Render (backend)
 
 ---
 
+## Ecosystem Stack (Basado en Gentle AI Stack)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    ORQUESTADOR PRINCIPAL                    │
+│                  (Vos / Humano)                             │
+│  "Ustedes son orquestadores del orquestador"                │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    MEMORY.md (Engram)                       │
+│  Decisiones, bugs, patrones, aprendizajes persistidos      │
+└─────────────────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    SDD Workflow                             │
+│  explore → propose → specify → implement → verify → doc    │
+└─────────────────────────────────────────────────────────────┘
+                      │
+          ┌───────────┴───────────┐
+          ▼                       ▼
+┌──────────────────┐     ┌──────────────────┐
+│   SUBAGENTE 1    │     │   SUBAGENTE 2     │
+│   (Frontend)     │     │   (Backend)       │
+│   3% contexto    │     │   3% contexto    │
+└──────────────────┘     └──────────────────┘
+```
+
+---
+
 ## Funcionalidades Implementadas
 
 ### ✅ Autenticación
