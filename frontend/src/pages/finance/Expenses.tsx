@@ -17,13 +17,14 @@ export function Expenses() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; expense: Expense | null }>({ open: false, expense: null });
+  type RecurrenceType = 'none' | 'weekly' | 'monthly' | 'yearly';
   const [formData, setFormData] = useState({
     amount: '',
     categoryId: '',
     description: '',
     dueDate: '',
     paymentDate: '',
-    recurrenceType: 'none' as const,
+    recurrenceType: 'none' as RecurrenceType,
   });
 
   const filteredExpenses = expenses.filter((e) => {
@@ -266,7 +267,7 @@ export function Expenses() {
                 <label className="block text-sm font-medium text-gray-700">Recurrencia</label>
                   <select
                     value={formData.recurrenceType}
-                    onChange={(e) => setFormData({ ...formData, recurrenceType: e.target.value as 'none' | 'weekly' | 'monthly' | 'yearly' })}
+                    onChange={(e) => setFormData({ ...formData, recurrenceType: e.target.value as RecurrenceType })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 border"
                   >
                   <option value="none">Una vez</option>
